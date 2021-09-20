@@ -1,3 +1,6 @@
-from fingerflow import example
+# from fingerflow import example
+# from src.fingerflow import extractor
+from fingerflow import extractor
 
-print(example.add_one(3))
+extractor.Extractor()
+# print(example.add_one(3))
