@@ -2,9 +2,9 @@ import numpy as np
 import cv2
 from tensorflow.keras import optimizers
 
+from . import constants, utils
 from .MinutiaeNet.CoarseNet import coarse_net_model, minutiae_net_utils, coarse_net_utils
 from .MinutiaeNet.FineNet import fine_net_model
-from . import constants
 
 
 class MinutiaeNet:
@@ -74,24 +74,15 @@ class MinutiaeNet:
         mnt_refined = []
 
         # ======= Verify using FineNet ============
-        for idx_minu in range(mnt_nms.shape[0]):
+        for idx_minu, minutiae in enumerate(mnt_nms):
             # Extract patch from image
-            x_begin = int(mnt_nms[idx_minu, 1]) - constants.PATCH_MINU_RADIO
-            y_begin = int(mnt_nms[idx_minu, 0]) - constants.PATCH_MINU_RADIO
-            patch_minu = original_image[x_begin: x_begin + 2 * constants.PATCH_MINU_RADIO,
-                                        y_begin: y_begin + 2 * constants.PATCH_MINU_RADIO]
+
+            x, y = minutiae[:2]
+
+            patch_minu = utils.get_minutiae_patch(x, y, original_image)
 
             if patch_minu.size > 0:
-                patch_minu = cv2.resize(patch_minu, dsize=(
-                    224, 224), interpolation=cv2.INTER_NEAREST)
-
-                ret = np.empty(
-                    (patch_minu.shape[0], patch_minu.shape[1], 3), dtype=np.uint8)
-                ret[:, :, 0] = patch_minu
-                ret[:, :, 1] = patch_minu
-                ret[:, :, 2] = patch_minu
-                patch_minu = ret
-                patch_minu = np.expand_dims(patch_minu, axis=0)
+                patch_minu = utils.resize_minutiae_patch(patch_minu)
 
                 # Use soft decision: merge FineNet score with CoarseNet score
                 [is_minutiae_prob] = self.__fine_net.predict(patch_minu)

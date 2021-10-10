@@ -2,13 +2,13 @@
 import os
 import cv2
 import numpy as np
-from src.fingerflow.extractor import minutiae_net
+from src.fingerflow import extractor
 
 COARSE_NET_PATH = "/home/jakub/projects/bp/minutiae_classificator/models/CoarseNet.h5"
 FINE_NET_PATH = "/home/jakub/projects/bp/minutiae_classificator/models/FineNet.h5"
+CLASSIFY_NET_PATH = "/home/jakub/projects/bp/minutiae_classificator/models/ClassifyNet.h5"
 
-# extractor.Extractor()
-minutiae_net = minutiae_net.MinutiaeNet(COARSE_NET_PATH, FINE_NET_PATH)
+extractor = extractor.Extractor(COARSE_NET_PATH, FINE_NET_PATH, CLASSIFY_NET_PATH)
 
 
 def read_image(image_path):
@@ -26,10 +26,9 @@ def read_image(image_path):
 
 
 def get_extracted_minutiae_data(image_path):
-    image = read_image(image_path)
+    image = np.array(cv2.imread(image_path, 0))
 
-    extracted_minutiae = minutiae_net.extract_minutiae_points(
-        image['image'], image['original_image'])
+    extracted_minutiae = extractor.extract_minutiae(image)
 
     return extracted_minutiae
 
@@ -42,7 +41,7 @@ def get_extracted_minutiae(image_folder):
             file_path = image_folder + file_name
 
             minutiae_data = get_extracted_minutiae_data(file_path)
-            print(f"{file_name} - processed")
+            print(f"{file_name} - processed => ")
 
             # file_name_without_extension = os.path.splitext(os.path.basename(file_name))[0]
             # minutiae = Minutiae(file_name_without_extension, minutiae_data)
@@ -52,4 +51,4 @@ def get_extracted_minutiae(image_folder):
 
 
 get_extracted_minutiae(
-    '/home/jakub/projects/bp/DBs/biometric DBs/FVC_Fingerprint_DB/FVC2004/DB1_A/')
+    '/home/jakub/projects/bp/DBs/biometric DBs/FVC_Fingerprint_DB/FVC2004/test/')
