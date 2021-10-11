@@ -3,8 +3,6 @@ import numpy as np
 
 from . import constants
 
-# TODO : tests
-
 
 def preprocess_image_data(image_data):
     image_size = np.array(image_data.shape, dtype=np.int32) // 8 * 8
@@ -32,31 +30,26 @@ def get_minutiae_patch_coordinate(patch_center, image_size):
     patch_start = patch_center - constants.PATCH_MINU_RADIO
     patch_end = patch_center + constants.PATCH_MINU_RADIO
 
-    return patch_start + start_shift - end_shift, patch_end - start_shift + end_shift
+    return patch_start + start_shift - end_shift, patch_end + start_shift - end_shift
 
 
 def get_minutiae_patch(x, y, image):
     x_start, x_end = get_minutiae_patch_coordinate(int(x), image.shape[0])
     y_start, y_end = get_minutiae_patch_coordinate(int(y), image.shape[1])
-
     patch_minu = image[x_start:x_end, y_start:y_end]
 
     return patch_minu
 
 
-# TODO : refactor
 def resize_minutiae_patch(minutiae_patch):
-    try:
-        minutiae_patch = cv2.resize(minutiae_patch, dsize=(
-            224, 224), interpolation=cv2.INTER_NEAREST)
-    except Exception as e:
-        # TODO : add some reasonable code here - programme will fail on next step
-        print(str(e))
+    minutiae_patch = cv2.resize(minutiae_patch, dsize=(224, 224), interpolation=cv2.INTER_NEAREST)
 
-    ret = np.empty((minutiae_patch.shape[0], minutiae_patch.shape[1], 3), dtype=np.uint8)
+    ret = np.empty(constants.INPUT_SHAPE, dtype=np.uint8)
+
     ret[:, :, 0] = minutiae_patch
     ret[:, :, 1] = minutiae_patch
     ret[:, :, 2] = minutiae_patch
+
     minutiae_patch = ret
     minutiae_patch = np.expand_dims(minutiae_patch, axis=0)
 
