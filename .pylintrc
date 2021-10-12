@@ -1,6 +1,6 @@
 [MASTER]
-# TODO : maybe remove rules for missing docstrings
-disable=C0114,C0115,C0116
+# TODO : maybe remove rules for missing docstrings and number of variables
+disable=C0103,C0114,C0115,C0116
 
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
@@ -22,7 +22,8 @@ fail-on=
 fail-under=10.0
 
 # Files or directories to be skipped. They should be base names, not paths.
-ignore=CVS
+# Ignoring MinutiaeNet - separate repo with its own rules
+ignore=CVS,MinutiaeNet
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths.
@@ -34,7 +35,7 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-init-hook="import sys; sys.path.append('/home/jakub/projects/dp/fingerflow')"
+init-hook="import sys; sys.path.append('.')"
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
@@ -289,9 +290,9 @@ redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
 [MISCELLANEOUS]
 
 # List of note tags to take in consideration, separated by a comma.
+# TODO : removed TODO keywoard - consider for future
 notes=FIXME,
       XXX,
-      TODO
 
 # Regular expression of note tags to take in consideration.
 #notes-rgx=
@@ -610,7 +611,7 @@ max-returns=6
 max-statements=50
 
 # Minimum number of public methods for a class (see R0903).
-min-public-methods=2
+min-public-methods=1
 
 
 [CLASSES]
