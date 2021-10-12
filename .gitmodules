@@ -1,0 +1,3 @@
+[submodule "src/fingerflow/extractor/MinutiaeNet"]
+	path = src/fingerflow/extractor/MinutiaeNet
+	url = git@github.com:jakubarendac/MinutiaeNet.git
