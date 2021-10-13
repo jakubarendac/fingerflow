@@ -1,10 +1,9 @@
 name: FingerFlow
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
