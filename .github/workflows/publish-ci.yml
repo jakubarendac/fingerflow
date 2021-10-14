@@ -33,6 +33,10 @@ jobs:
           .
 
       - name: Publish distribution package to PyPI
+<<<<<<< Updated upstream
         uses: pypa/gh-action-pypi-publish@main
+=======
+        uses: pypa/gh-action-pypi-publish@master
+>>>>>>> Stashed changes
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
