@@ -2,9 +2,7 @@ name: FingerFlow - publish
 
 on:
   release:
-    branches:
-      - main
-
+    types: [published]
 
 jobs:
   build:
