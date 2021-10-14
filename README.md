@@ -25,7 +25,6 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install FingerF
 Installation in anaconda enviroment:
 
 ```bash
-conda install cudatoolkit=<version compatible with the system CUDA>
 pip install fingerflow
 ```
 

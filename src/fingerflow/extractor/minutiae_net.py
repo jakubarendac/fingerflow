@@ -22,7 +22,8 @@ class MinutiaeNet:
                                 optimizer=optimizers.Adam(learning_rate=0),
                                 metrics=['accuracy'])
 
-    def extract_minutiae_points(self, image, original_image):
+    # TODO : refactor - too long function
+    def extract_minutiae_points(self, image, original_image):  # pylint: disable=too-many-locals
         # Generate OF
         texture_img = minutiae_net_utils.fast_enhance_texture(image, sigma=2.5, show=False)
         dir_map, _ = minutiae_net_utils.get_maps_stft(
@@ -63,9 +64,9 @@ class MinutiaeNet:
             # Make sure good result is given
             if mnt_nms_1.shape[0] > 4 and mnt_nms_2.shape[0] > 4:
                 break
-            else:
-                final_minutiae_score_threashold = final_minutiae_score_threashold - 0.05
-                early_minutiae_thres = early_minutiae_thres - 0.05
+
+            final_minutiae_score_threashold = final_minutiae_score_threashold - 0.05
+            early_minutiae_thres = early_minutiae_thres - 0.05
 
         mnt_nms = minutiae_net_utils.fuse_nms(mnt_nms_1, mnt_nms_2)
 

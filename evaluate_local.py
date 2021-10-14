@@ -36,11 +36,11 @@ def get_extracted_minutiae_data(image_path):
 def get_extracted_minutiae(image_folder):
     # minutiae_files = []
 
-    for subdir, dirs, files in os.walk(image_folder):
+    for _, _, files in os.walk(image_folder):
         for file_name in files:
             file_path = image_folder + file_name
 
-            minutiae_data = get_extracted_minutiae_data(file_path)
+            _ = get_extracted_minutiae_data(file_path)
             print(f"{file_name} - processed => ")
 
             # file_name_without_extension = os.path.splitext(os.path.basename(file_name))[0]
