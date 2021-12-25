@@ -63,6 +63,8 @@ fingerflow.extractor.Extractor()
 
 **Methods**
 
+#### TODO update extract minutiae method doc
+
 - `extract_minutiae(image_data)` - used for extracting minutiae points from input RGB image data. Methods accepts input data in form of [numpy](https://numpy.org/) array. Function returns numpy ndarray of extracted and classified minutiae points in following form:
   - **x** - x coordinate of minutiae point
   - **y** - y coordinate of minutiae point

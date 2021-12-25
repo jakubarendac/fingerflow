@@ -4,7 +4,8 @@ import numpy as np
 from . import constants
 
 
-def preprocess_image_data(image_data):
+def preprocess_image_data(raw_image_data):
+    image_data = np.array(cv2.cvtColor(raw_image_data, cv2.COLOR_BGR2GRAY))
     image_size = np.array(image_data.shape, dtype=np.int32) // 8 * 8
     image = image_data[:image_size[0], :image_size[1]]
 
