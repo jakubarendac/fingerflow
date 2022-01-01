@@ -6,3 +6,4 @@ repos:
         entry: pylint
         language: system
         types: [python]
+        exclude: ^scripts/
