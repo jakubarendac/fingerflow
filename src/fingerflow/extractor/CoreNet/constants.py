@@ -1,4 +1,3 @@
-# TODO : add docs
 # number of classes of detected objects => 1 only core is being detected
 NUM_CLASSES = 1
 USE_DISTRIBUTED_TRAINING = False

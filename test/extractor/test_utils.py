@@ -1,3 +1,4 @@
+# pylint: disable=no-self-use
 import unittest
 import numpy as np
 
@@ -6,13 +7,13 @@ from src.fingerflow.extractor import utils
 
 class PreprocessImageDataTest(unittest.TestCase):
     def test_correct_image_data(self):
-        mock_input_data = np.zeros((100, 100))
+        mock_input_data = np.zeros((100, 100, 3), dtype=np.uint8)
         mock_input_data_size = np.array(mock_input_data.shape, dtype=np.int32) // 8 * 8
 
         mock_output_data = {
-            'original_image': mock_input_data,
-            'image_size': mock_input_data_size,
-            'image': mock_input_data[:mock_input_data_size[0], :mock_input_data_size[0]]
+            'original_image': mock_input_data[:, :, -1],
+            'image_size': mock_input_data_size[:-1],
+            'image': mock_input_data[:mock_input_data_size[0], :mock_input_data_size[0], -1]
         }
 
         result_output_data = utils.preprocess_image_data(mock_input_data)

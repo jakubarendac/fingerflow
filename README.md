@@ -66,10 +66,8 @@ fingerflow.extractor.Extractor()
 
 **Methods**
 
-#### TODO update extract minutiae method doc
-
 - `extract_minutiae(image_data)` - used for extracting minutiae points and detecting of fingerprint core from input image data. Method accepts input data in form of 3D matrix (e.g. output of [OpenCV imread function](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56)). Function returns object with extracted and detected data in following shape:
-- **minutiae** - [numpy](https://numpy.org/) ndarray of extracted and classified minutiae points in following form:
+- **minutiae** - [Pandas](https://pandas.pydata.org/) DataFrame of extracted and classified minutiae points in following form:
   - **x** - x coordinate of minutiae point
   - **y** - y coordinate of minutiae point
   - **angle** - direction of minutiae point rotation

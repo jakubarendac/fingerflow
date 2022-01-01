@@ -23,5 +23,4 @@ class Extractor:
 
         core_coordinates = self.__core_detection_module.detect_fingerprint_core(image_data)
 
-        # TODO : unify to use dataframe
         return {'core': core_coordinates, 'minutiae': classified_points}

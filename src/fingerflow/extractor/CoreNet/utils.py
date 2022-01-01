@@ -4,10 +4,6 @@ import pandas as pd
 
 from . import constants
 
-# TODO write docs and tests !!
-
-# TODO : refactor - too long function
-
 
 def load_darknet_weights(model, weights_file_path):  # pylint: disable=too-many-locals
     conv_layer_size = 110
@@ -65,15 +61,8 @@ def preprocess_image_data(image_data):
 
 
 def get_detection_data(img, model_outputs):
-    """
-    :param img: target raw image
-    :param model_outputs: outputs from inference_model
-    :return:
-    """
-
     num_bboxes = model_outputs[-1][0]
     boxes, scores, _ = [output[0][:num_bboxes] for output in model_outputs[:-1]]
-
     h, w = img.shape[:2]
     df = pd.DataFrame(boxes, columns=['x1', 'y1', 'x2', 'y2'])
     df[['x1', 'x2']] = (df[['x1', 'x2']] * w).astype('int64')
@@ -82,5 +71,6 @@ def get_detection_data(img, model_outputs):
     df['w'] = df['x2'] - df['x1']
     df['h'] = df['y2'] - df['y1']
 
-    print(f'# of bboxes: {num_bboxes}')
+    # print(f'# of bboxes: {num_bboxes}')
+
     return df

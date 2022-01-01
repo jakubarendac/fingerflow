@@ -1,7 +1,7 @@
 import numpy as np
 from tensorflow.keras import optimizers
 
-from .ClassifyNet import classify_net_model
+from .ClassifyNet import classify_net_model, utils as classify_net_utils
 from . import utils
 
 
@@ -40,4 +40,6 @@ class ClassifyNet:
 
                 classified_minutiae.append(tmp_mnt)
 
-        return np.array(classified_minutiae)
+        formatted_data = classify_net_utils.format_classified_data(np.array(classified_minutiae))
+
+        return formatted_data
