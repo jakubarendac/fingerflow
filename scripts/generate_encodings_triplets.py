@@ -1,71 +1,50 @@
 import os
 import random
 from shutil import copyfile
-from pathlib import Path
+from itertools import groupby
 
-ENCONDINGS_PATH = '/home/jakub/projects/dp/matcher_training_data/03112021194631/'
+ENCONDINGS_PATH = '/home/jakub/projects/dp/matcher_training_data/08022022232546/'
 
 ANCHOR_ENCODINGS = '/home/jakub/projects/dp/matcher_training_data/dataset/anchor/'
 POSITIVE_ENCODINGS = '/home/jakub/projects/dp/matcher_training_data/dataset/positive/'
 NEGATIVE_ENCODINGS = '/home/jakub/projects/dp/matcher_training_data/dataset/negative/'
 
 
-def should_add_anchor(encodings_item):
-    return not os.path.exists(f"{ANCHOR_ENCODINGS}{encodings_item}.csv")
+def get_random_negative_item(items, anchor_file):
+    random.shuffle(items)
+
+    negative_item = list(filter(lambda file_name: file_name.split(
+        '_')[0] != anchor_file.split('_')[0], items))[0]
+
+    return negative_item
 
 
-def should_add_positive(encodings_item):
-    return not os.path.exists(f"{POSITIVE_ENCODINGS}{encodings_item}.csv")
-
-
-def shuffle_negative_encodings(encodings_names):
-    anchor_files = os.listdir(ANCHOR_ENCODINGS)
-
-    def get_item(anchor_file):
-        return Path(anchor_file).stem
-
-    anchor_items = list(map(get_item, anchor_files))
-    anchor_items_copy = anchor_items.copy()
-
-    for encoding_name in encodings_names:
-        if len(anchor_items_copy) == 0:
-            return
-
-        encoding_item = encoding_name.split('_')[0]
-        if encoding_item in anchor_items:
-            random_item = random.choice(anchor_items)
-
-            while random_item is encoding_item or str(random_item) not in anchor_items_copy:
-                random_item = random.choice(anchor_items)
-
-            src_encoding_path = ENCONDINGS_PATH + encoding_name
-            dst_encoding_path = f"{NEGATIVE_ENCODINGS}{random_item}.csv"
-
-            # print("chosen => ", random_item, encoding_item)
-
-            copyfile(src_encoding_path, dst_encoding_path)
-            anchor_items_copy.remove(random_item)
-
+pair_number = 0
 
 for _, _, files in os.walk(ENCONDINGS_PATH):
-    file_names = files.copy()
+    files_copy = files.copy()
 
-    for file_name in files:
-        src_file_path = ENCONDINGS_PATH + file_name
-        item = file_name.split('_')[0]
+    files.sort()
 
-        if should_add_anchor(item):
-            dst_file_path = f"{ANCHOR_ENCODINGS}{item}.csv"
-            copyfile(src_file_path, dst_file_path)
-            file_names.remove(file_name)
+    for key, group in groupby(files, lambda file_name: file_name.split('_')[0]):
+        pairs = zip(*(iter(group),) * 2)
 
-            continue
+        for pair in pairs:
+            anchor, positive = pair
 
-        if should_add_positive(item):
-            dst_file_path = f"{POSITIVE_ENCODINGS}{item}.csv"
-            copyfile(src_file_path, dst_file_path)
-            file_names.remove(file_name)
+            negative = get_random_negative_item(files_copy, anchor)
 
-            continue
+            src_anchor_file_path = ENCONDINGS_PATH + anchor
+            dst_anchor_file_path = f"{ANCHOR_ENCODINGS}{pair_number}.csv"
 
-shuffle_negative_encodings(file_names)
+            src_positive_file_path = ENCONDINGS_PATH + positive
+            dst_positive_file_path = f"{POSITIVE_ENCODINGS}{pair_number}.csv"
+
+            src_negative_file_path = ENCONDINGS_PATH + negative
+            dst_negative_file_path = f"{NEGATIVE_ENCODINGS}{pair_number}.csv"
+
+            copyfile(src_anchor_file_path, dst_anchor_file_path)
+            copyfile(src_positive_file_path, dst_positive_file_path)
+            copyfile(src_negative_file_path, dst_negative_file_path)
+
+            pair_number += 1
