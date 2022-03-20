@@ -4,7 +4,7 @@ from pathlib import Path
 import cv2
 import pandas as pd
 import numpy as np
-from fingerflow import extractor
+from src.fingerflow import extractor
 
 current_datetime = datetime.now().strftime("%d%m%Y%H%M%S")
 

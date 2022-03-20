@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-# USING PYPI PACKAGEinger
+# USING PYPI PACKAGE
 # from fingerflow import extractor
 # USING LOCAL VERSION - move script ro parent folder to run it
 from src.fingerflow import extractor

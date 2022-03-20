@@ -132,3 +132,6 @@ dmypy.json
 .vscode
 logs
 test_data
+dataset
+models
+matcher_training_data
