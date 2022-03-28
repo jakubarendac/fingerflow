@@ -1,3 +1,4 @@
+# pylint: skip-file
 import tensorflow as tf
 
 from . import constants, utils
@@ -43,17 +44,18 @@ def get_verify_net_model(precision, verify_net_path=None):
 
 
 def get_embeddings_model(precision):
-    # switcher = {
-    #     15: build_15_minutiae_model,
-    #     20: build_20_minutiae_model
-    # }
+    switcher = {
+        15: build_15_minutiae_model,
+        20: build_20_minutiae_model
+    }
 
-    # inputs = tf.keras.Input(shape=(utils.get_input_shape(precision)))
+    inputs = tf.keras.Input(shape=(utils.get_input_shape(precision)))
 
-    # x = tf.keras.layers.BatchNormalization()(inputs)
+    x = tf.keras.layers.BatchNormalization()(inputs)
 
-    # # outputs = switcher.get(precision)(x)
+    outputs = switcher.get(precision)(x)
 
+    # return outputs
     # # x = tf.keras.layers.Dense(32, activation='relu')(x)
     # # x = tf.keras.layers.Dense(64, activation='sigmoid')(x)
     # # x = tf.keras.layers.Dense(128, activation='relu')(inputs)
@@ -110,11 +112,11 @@ def get_embeddings_model(precision):
     # # x = tf.keras.layers.PReLU()(x)
     # # x = tf.keras.layers.MaxPooling1D(2)(x)
 
-    # embedding_network = tf.keras.Model(inputs, x)
+    embedding_network = tf.keras.Model(inputs, outputs)
+    embedding_network.summary()
+    #model = ResNet50()
 
-    model = ResNet50()
-
-    return model
+    return embedding_network
 
 
 def KerasResNet50():
@@ -168,10 +170,10 @@ def build_20_minutiae_model(x):
     # # x = tf.keras.layers.MaxPooling1D(2)(x)
     # # x = tf.keras.layers.Dropout(0.2)(x)
 
-    # # x = tf.keras.layers.Conv1D(128, 3, activation="relu",
-    # #                            kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
-    # # x = tf.keras.layers.MaxPooling1D(1)(x)
-    # # x = tf.keras.layers.Dropout(0.2)(x)
+    # x = tf.keras.layers.Conv1D(128, 3, activation="relu",
+    #                           kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
+    #x = tf.keras.layers.MaxPooling1D(1)(x)
+    #x = tf.keras.layers.Dropout(0.2)(x)
 
     # x = tf.keras.layers.Conv1D(128, 3, activation="relu")(x)
 
@@ -194,38 +196,60 @@ def build_20_minutiae_model(x):
 
     # x = tf.keras.layers.Conv1D(8, 3, activation="relu")(x)
 
-    # x = tf.keras.layers.Conv1D(128, 3, activation="relu",
-    #                            kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
-    # x = tf.keras.layers.MaxPooling1D(1)(x)
-    # x = tf.keras.layers.Dropout(0.1)(x)
+    # x = tf.keras.layers.Conv1D(256, 3, activation="relu",
+    #                           kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
+    #x = tf.keras.layers.MaxPooling1D(1)(x)
+    #x = tf.keras.layers.Dropout(0.1)(x)
+
+    # x = tf.keras.layers.Conv1D(512, 3, activation="relu",
+    #                           kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
+    #x = tf.keras.layers.MaxPooling1D(1)(x)
+    #x = tf.keras.layers.Dropout(0.1)(x)
 
     # x = tf.keras.layers.Conv1D(256, 3, activation="relu",
-    #                            kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
-    # x = tf.keras.layers.MaxPooling1D(1)(x)
-    # # x = tf.keras.layers.Dropout(0.1)(x)
+    #                           kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
+    #x = tf.keras.layers.MaxPooling1D(1)(x)
+    #x = tf.keras.layers.Dropout(0.1)(x)
 
-    # x = tf.keras.layers.Conv1D(128, 3, activation="relu",
-    #                            kernel_regularizer=tf.keras.regularizers.l2(l2=0))(x)
-    # x = tf.keras.layers.MaxPooling1D(1)(x)
-    # # x = tf.keras.layers.Dropout(0.1)(x)
+    #x = tf.keras.layers.Conv1D(128, 3, activation="relu")(x)
+    #x = tf.keras.layers.MaxPooling1D(1)(x)
+    #x = tf.keras.layers.Dropout(0.1)(x)
+    x = tf.keras.layers.ZeroPadding2D((0, (6, 5)))(x)
+#    X = tf.keras.layers.ZeroPadding2D((25, 25))(X)
 
-    # x = tf.keras.layers.Conv1D(64, 3, activation="relu")(x)
-    # x = tf.keras.layers.MaxPooling1D(1)(x)
-    # # x = tf.keras.layers.Dropout(0.1)(x)
-
-    # x = tf.keras.layers.Conv1D(64, 3, activation="relu")(x)
-    # x = tf.keras.layers.MaxPooling1D(1)(x)
-    # x = tf.keras.layers.Dropout(0.1)(x)
+    # x = tf.keras.layers.Conv2D(1, (3,3),
+    #                           kernel_regularizer=tf.keras.regularizers.l2(l2=0.001),
+    #                           activation="relu")(x)
+    #x = tf.keras.layers.MaxPooling1D(1)(x)
+    #x = tf.keras.layers.Dropout(0.2)(x)
 
     # x = tf.keras.layers.Dense(1024, activation='sigmoid')(x)
 
-    x = tf.keras.layers.Dense(256, activation='sigmoid')(x)
+    #x = tf.keras.layers.Dense(256, activation='sigmoid')(x)
     # x = tf.keras.layers.Dropout(0.1)(x)
-    # x = tf.keras.layers.Flatten()(x)
+    #x = tf.keras.layers.Flatten()(x)
+
+    x = tf.keras.layers.Conv1D(64, 3, 2, activation="relu")(x)
+    #x = tf.keras.layers.MaxPooling2D(2)(x)
+    #x = tf.keras.layers.Dropout(0.1)(x)
+
+    x = tf.keras.layers.Conv1D(64, 3, 2, activation="relu")(x)
+    x = tf.keras.layers.MaxPooling2D(2)(x)
+    #x = tf.keras.layers.Dropout(0.1)(x)
 
     # x = tf.keras.layers.Dense(5, activation='sigmoid')(x)
+    x = tf.keras.layers.Dense(256,
+                              kernel_regularizer=tf.keras.regularizers.l2(l2=0.0001),
+                              activation='relu')(x)
+    x = tf.keras.layers.Dropout(0.6)(x)
+    x = tf.keras.layers.Dense(128,
+                              kernel_regularizer=tf.keras.regularizers.l2(l2=0.0001),
+                              activation='relu')(x)
+    x = tf.keras.layers.Dropout(0.6)(x)
 
-    # x = tf.keras.layers.Dense(5, activation='sigmoid')(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(10, activation='sigmoid')(x)
+    # x = tf.keras.layers.Dropout(0.1)(x)
 
     return x
 
@@ -375,16 +399,20 @@ def ResNet50(input_shape=(20, 6, 1)):
     X = tf.keras.layers.Conv2D(3, (3, 3), padding='same')(X)
 
     # Stage 1
-    X = tf.keras.layers.Conv2D(64, (7, 7), strides=(2, 2), name='con
-                              kernel_initializer=tf.keras.initializers.glorot_uniform(seed=0))(X)
-    #X = tf.keras.layers.Dropout(0.4)(X)
+    X = tf.keras.layers.Conv2D(64, (7, 7), strides=(2, 2), name='conv1',
+                               kernel_initializer=tf.keras.initializers.glorot_uniform(seed=0))(X)
+    X = tf.keras.layers.Dropout(0.1)(X)
     X = tf.keras.layers.BatchNormalization(axis=3, name='bn_conv1')(X)
     X = tf.keras.layers.Activation('relu')(X)
     X = tf.keras.layers.MaxPooling2D((3, 3), strides=(2, 2))(X)
+
+    X = tf.keras.layers.Conv2D(64, (3, 3), strides=(1, 1), name='conv2',
+                               kernel_initializer=tf.keras.initializers.glorot_uniform(seed=0))(X)
+ #   X = tf.keras.layers.Activation('relu')(X)
     # Stage 2
-#    X = convolutional_block(X, f=3, filters=[64, 64, 256], stage=2, block='a', s=1)
-#    X = identity_block(X, 3, [64, 64, 256], stage=2, block='b')
-#    X = identity_block(X, 3, [64, 64, 256], stage=2, block='c')
+    #X = convolutional_block(X, f=3, filters=[64, 64, 256], stage=2, block='a', s=1)
+    #X = identity_block(X, 3, [64, 64, 256], stage=2, block='b')
+    #X = identity_block(X, 3, [64, 64, 256], stage=2, block='c')
 
     # # ### START CODE HERE ###
 
@@ -415,10 +443,11 @@ def ResNet50(input_shape=(20, 6, 1)):
     # output layer
     X = tf.keras.layers.Flatten()(X)
     X = tf.keras.layers.Dense(
-        64, activation='relu',
-        name='fc' + str(64),
+        16, activation='relu',
+        name='fc' + str(16),
+        #kernel_regularization = tf.keras.regularizers.l2(l2=0.001),
         kernel_initializer=tf.keras.initializers.glorot_uniform(seed=0))(X)
-    X = tf.keras.layers.Dropout(0.2)(X)
+    #X = tf.keras.layers.Dropout(0.1)(X)
     # Create model
     model = tf.keras.Model(inputs=X_input, outputs=X, name='ResNet50')
     print("summary => ", model.summary())

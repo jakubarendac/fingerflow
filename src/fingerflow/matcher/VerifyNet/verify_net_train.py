@@ -3,47 +3,29 @@ from datetime import datetime
 import tensorflow as tf
 import numpy as np
 from sklearn.utils import shuffle
-from sklearn.preprocessing import MinMaxScaler
 
-from . import verify_net_model
+from . import verify_net_model, utils
 
 PRECISION = 20
 
-N_NEAREST_TO_USE = 5
+CURRENT_TIMESTAMP = datetime.now().strftime("%Y%m%d-%H%M%S")
 
-DATASET_PATH = f'/home/jakubarendac/fingerflow/matcher_training_data/preprocessed_dataset_{PRECISION}'
-LOGS_FOLDER = f'logs/logs-conv-contrast-{PRECISION}/scalars/{datetime.now().strftime("%Y%m%d-%H%M%S")}'
-MODEL_PATH = f'/home/jakubarendac/fingerflow/models/matcher_contrast_weights_{PRECISION}.h5'
+DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/preprocessed_dataset_{PRECISION}'
+LOGS_FOLDER = f'/home/jakub/projects/dp/fingerflow/logs/logs-conv-contrast-{PRECISION}/scalars/{CURRENT_TIMESTAMP}'
+MODEL_PATH = f'/home/jakub/projects/dp/fingerflow/models/matcher_contrast_weights_{PRECISION}_{CURRENT_TIMESTAMP}.h5'
 EPOCHS = 100
 BATCH_SIZE = 64
 
 model = verify_net_model.get_verify_net_model(PRECISION)
 
 
-def find_n_nearest_minutiae(minutiae_points, current_minutia):
-    def calculate_distance(item):
-        return np.linalg.norm(current_minutia-item)
-
-    minutiae_distances = list(map(calculate_distance, minutiae_points))
-    minutiae_distances.sort()
-
-    return np.array(minutiae_distances[1:N_NEAREST_TO_USE+1])
-
-
 def preprocess_item(filename, folder):
-    minutiae = []
     raw_minutiae = np.genfromtxt(
         f"{folder}/{filename}", delimiter=",")
 
-    for minutia in raw_minutiae:
-       features_to_add = find_n_nearest_minutiae(raw_minutiae[:, :2], minutia[:2])
+    enhanced_minutiae = utils.enhance_minutiae_points(raw_minutiae)
 
-       updated_minutia = np.append(minutia, features_to_add)
-
-       minutiae.append(updated_minutia[2:])
-
-    return np.array(minutiae)
-    # return MinMaxScaler().fit_transform(np.array(raw_minutiae))
+    return enhanced_minutiae
 
 
 def load_folder_data(folder):
@@ -51,18 +33,15 @@ def load_folder_data(folder):
     labels = []
 
     for _, _, files in os.walk(folder):
-        # print(files)
-        #files = list(filter(lambda item: item.split("_")[0] == '02', files))
         raw_data = [preprocess_item(filename, folder) for filename in files]
 
         labels = [int(filename.split("_")[0]) for filename in files]
 
         data = np.stack(raw_data)
 
-    # scaled_data =
-
     data_shuffled, labels_shuffled = shuffle(data, np.array(labels))
-    return (data_shuffled, labels_shuffled)
+
+    return data_shuffled, labels_shuffled
 
 
 def load_dataset():
@@ -82,15 +61,15 @@ def load_dataset():
         label = labels[idxA]
         # randomly pick an image that belongs to the *same* class
         # label
-        for _ in range(0, 1):
-            idxB = np.random.choice(idx[label])
 
-            posData = data[idxB]
-            # prepare a positive pair and update the images and labels
-            # lists, respectively
-            np.random.shuffle(currentImage)
-            pairImages.append([currentImage, posData])
-            pairLabels.append([1])
+        idxB = np.random.choice(idx[label])
+
+        posData = data[idxB]
+        # prepare a positive pair and update the images and labels
+        # lists, respectively
+        np.random.shuffle(currentImage)
+        pairImages.append([currentImage, posData])
+        pairLabels.append([1])
 
         # grab the indices for each of the class labels *not* equal to
         # the current label and randomly pick an image corresponding
@@ -98,12 +77,11 @@ def load_dataset():
         # print(labels)
         negIdx = np.where(labels != label)[0]
 
-        for _ in range(0, 1):
-            negData = data[np.random.choice(negIdx)]
-            # prepare a negative pair of images and update our lists
-            np.random.shuffle(currentImage)
-            pairImages.append([currentImage, negData])
-            pairLabels.append([0])
+        negData = data[np.random.choice(negIdx)]
+        # prepare a negative pair of images and update our lists
+        np.random.shuffle(currentImage)
+        pairImages.append([currentImage, negData])
+        pairLabels.append([0])
 
         # return a 2-tuple of our image pairs and labels
     print('FINISH: loading data')
@@ -125,17 +103,32 @@ def split_dataset(pairs, labels):
     return train_dataset, val_dataset, test_dataset
 
 
-def train():
+def load_and_preprocess_dataset():
     pairs, labels = load_dataset()
     pairs_shuffled, labels_shuffled = shuffle(pairs, labels)
-
     train_dataset, val_dataset, test_dataset = split_dataset(pairs_shuffled, labels_shuffled)
+
+    return train_dataset, val_dataset, test_dataset
+
+
+def train():
+    train_dataset, val_dataset, test_dataset = load_and_preprocess_dataset()
+
     model.summary()
+
+    def scheduler(epoch, lr):
+        if epoch < 55:
+            return lr
+
+        return lr * tf.math.exp(-0.1)
 
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=LOGS_FOLDER)
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
         MODEL_PATH, monitor=['val_accuracy'],
         verbose=1, mode='max', save_weights_only=True)
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.75,
+                                                     patience=10, min_lr=0.0001, verbose=1)
+    lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
     train_pairs, train_labels = train_dataset
     val_pairs, val_labels = val_dataset
@@ -147,7 +140,7 @@ def train():
         validation_data=([val_pairs[:, 0], val_pairs[:, 1]], val_labels),
         batch_size=BATCH_SIZE,
         epochs=EPOCHS,
-        callbacks=[tensorboard]
+        callbacks=[tensorboard, checkpoint, reduce_lr, lr_scheduler]
     )
 
     model.evaluate([test_pairs[:, 0], test_pairs[:, 1]], test_labels)

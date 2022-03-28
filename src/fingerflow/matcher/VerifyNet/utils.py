@@ -66,6 +66,30 @@ def get_input_shape(precision):
     return (precision, constants.MINUTIAE_FEATURES, 1)
 
 
+def find_n_nearest_minutiae(minutiae_points, current_minutia):
+    def calculate_distance(item):
+        return np.linalg.norm(current_minutia-item)
+
+    minutiae_distances = list(map(calculate_distance, minutiae_points))
+    minutiae_distances.sort()
+
+    return np.array(minutiae_distances[1:constants.MINUTIA_NEIGHBORS+1])
+
+
+# TODO : try to add n-nearest not sorted
+def enhance_minutiae_points(minutiae):
+    enhanced_minutiae = []
+
+    for minutia in minutiae:
+        features_to_add = find_n_nearest_minutiae(minutiae[:, :2], minutia[:2])
+
+        updated_minutia = np.append(minutia, features_to_add)
+
+        enhanced_minutiae.append(updated_minutia[2:])
+
+    return np.array(enhanced_minutiae)
+
+
 def preprocess_predict_input(anchor, sample):
     """Provides preprocessed predict input
 
@@ -76,4 +100,4 @@ def preprocess_predict_input(anchor, sample):
     Returns:
         Array consumed by model.predict function
     """
-    return [np.array([anchor]), np.array([sample])]
+    return [np.array([enhance_minutiae_points(anchor)]), np.array([enhance_minutiae_points(sample)])]

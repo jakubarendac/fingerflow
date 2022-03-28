@@ -135,3 +135,4 @@ test_data
 dataset
 models
 matcher_training_data
+server_logs
