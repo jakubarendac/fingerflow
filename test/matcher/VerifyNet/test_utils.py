@@ -5,6 +5,8 @@ import tensorflow as tf
 
 from src.fingerflow.matcher.VerifyNet import utils
 
+tf.config.set_visible_devices([], 'GPU')
+
 
 class EuclideanDistanceTest(unittest.TestCase):
     def test_calculate_distance_to_same_point(self):
@@ -25,7 +27,7 @@ class EuclideanDistanceTest(unittest.TestCase):
 
         result_output = utils.euclidean_distance([tensor_1, tensor_2])
 
-        result_mock = tf.constant([[14.142137]])
+        result_mock = tf.constant([[14.142136]])
 
         [[are_results_equal]] = tf.math.equal(result_output, result_mock).numpy()
 
