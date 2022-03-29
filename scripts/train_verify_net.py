@@ -1,7 +1,4 @@
-import os
-
+# NOTE: move file to root folder to enable training locally
 from src.fingerflow.matcher.VerifyNet import verify_net_train
-
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 verify_net_train.train()

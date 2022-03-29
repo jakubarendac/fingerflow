@@ -3,8 +3,6 @@ import numpy as np
 
 from . import constants
 
-# TODO : write tests
-
 
 def euclidean_distance(vects):
     """Find the Euclidean distance between two vectors.
@@ -55,13 +53,13 @@ def verify_net_loss(margin):
 
 
 def get_input_shape(precision):
-    """Provides input shape based on precision
+    """Provides input shape based on precision.
 
     Arguments:
-        precision: number of minutia to be used
+        precision: number of minutia to be used.
 
     Returns:
-        Input shape tuple - number of minutiae, used features
+        Input shape tuple - number of minutiae, used features.
     """
     return (precision, constants.MINUTIAE_FEATURES, 1)
 
@@ -78,6 +76,15 @@ def find_n_nearest_minutiae(minutiae_points, current_minutia):
 
 # TODO : try to add n-nearest not sorted
 def enhance_minutiae_points(minutiae):
+    """Enhances minutiae points with distances to n-nearest neighbors.
+       Also removes `x` an `y` coordinates from feature vector.
+
+    Arguments:
+        minutiae: raw extracted minutiae points.
+
+    Returns:
+        Numpy array without `x` and `y` with additional distances to n nearest neighbors.
+    """
     enhanced_minutiae = []
 
     for minutia in minutiae:
@@ -91,7 +98,7 @@ def enhance_minutiae_points(minutiae):
 
 
 def preprocess_predict_input(anchor, sample):
-    """Provides preprocessed predict input
+    """Provides preprocessed predict input.
 
     Arguments:
         anchor: anchor minutiae points
