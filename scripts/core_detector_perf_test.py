@@ -4,7 +4,7 @@ import numpy as np
 
 # from fingerflow.extractor.core_net import CoreNet
 # USING LOCAL VERSION - move script ro parent folder to run it
-from src.fingerflow.extractor.core_net import CoreNet
+from fingerflow.extractor.core_net import CoreNet
 
 # matplotlib.use('TkAgg')
 
@@ -35,10 +35,14 @@ from src.fingerflow.extractor.core_net import CoreNet
 # {'precision': 0.9970104633781763, 'recall': 0.9910846953937593}
 # IOU = 0.5
 # {'precision': 0.7959641255605381, 'recall': 0.9888579387186629}
+# IOU = 0.6
+# {'precision': 0.5677710843373494, 'recall': 0.9716494845360825}
+# IOU = 0.7
+# {'precision': 0.2605421686746988, 'recall': 0.9402173913043478}
 
 DATASET_PATH = '/home/jakub/projects/dp/kernel-detector/trainings/datasets/test_local.txt'
 WEIGHTS_PATH = '/home/jakub/projects/dp/kernel-detector/trainings/19-12-2021-final/yolo-kernel_best.weights'
-IOU_THRESHOLD = 0.2
+IOU_THRESHOLD = 0.7
 
 core_net = CoreNet(WEIGHTS_PATH)
 

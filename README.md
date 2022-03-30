@@ -5,9 +5,10 @@
 
 FingerFlow is an end-to-end deep learning Python framework for fingerprint minutiae manipulation built on top of [Keras](https://keras.io/) - [TensorFlow](https://www.tensorflow.org/) high-level API.
 
-In current stable version 2.0.0 following modules are provided:
+In current stable version 3.0.0 following modules are provided:
 
 - **extractor** - module responsible for extraction and classification of minutiae points from fingerprints. It is also capable of detecting fingerprint core points.
+- **matcher** - module responsible for matching extracted minutiae feature vectors.
 
 ## GPU support
 
@@ -32,7 +33,9 @@ pip install fingerflow
 
 ### Extractor
 
-Module responsible for extraction and classification of fingerprint minutiae points and also for detecting fingerprint core point. Minutiae extraction part is built using [MinutiaeNet](https://github.com/luannd/MinutiaeNet) neural network architecture. Core detection part is built using YOLOv4 object detection neural network architecture.
+Module responsible for extraction and classification of fingerprint minutiae points and also for detecting fingerprint core point.
+Minutiae extraction part is built using [MinutiaeNet](https://github.com/luannd/MinutiaeNet) neural network architecture.
+Core detection part is built using YOLOv4 object detection neural network architecture.
 
 Extractor contains 3 modules:
 
@@ -66,7 +69,9 @@ fingerflow.extractor.Extractor()
 
 **Methods**
 
-- `extract_minutiae(image_data)` - used for extracting minutiae points and detecting of fingerprint core from input image data. Method accepts input data in form of 3D matrix (e.g. output of [OpenCV imread function](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56)). Function returns object with extracted and detected data in following shape:
+- `extract_minutiae(image_data)` - used for extracting minutiae points and detecting of fingerprint core from input image data.
+  Method accepts input data in form of 3D matrix (e.g. output of [OpenCV imread function](https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56)).
+  Method returns object with extracted and detected data in following shape:
 - **minutiae** - [Pandas](https://pandas.pydata.org/) DataFrame of extracted and classified minutiae points in following form:
   - **x** - x coordinate of minutiae point
   - **y** - y coordinate of minutiae point
@@ -100,6 +105,52 @@ extractor = Extractor("coarse_net", "fine_net", "classify_net", "core_net")
 image = cv2.imread("some_image")
 
 extracted_minutiae = extractor.extract_minutiae(image)
+```
+
+### Matcher
+
+Module responsible for matching extracted feature vectors. It is using custom Siamese neural network architecture.
+Input size (number of minutiae in feature vector) for matching is not fixed and can be adjusted.
+But in general, the more minutiae points the higher precision. Our custom model is trained on TBD minutie points per input.
+
+Matcher contains 1 module:
+
+- **VerifyNet** - module responsible for matching feature vectors. Custom Siamese neural network architecture is used.
+
+#### Neural network models
+
+- **VerifyNet**: TBD
+
+#### API
+
+#### `Matcher`
+
+Class which provides all functionality for matching feature vectors
+
+```python
+fingerflow.matcher.Matcher()
+```
+
+**Arguments**
+
+- `precision` - input size (number of minutiae in feature vector)
+- `verify_net_path` - used for setting path to pretrained model of submodule VerifyNet
+
+**Methods**`
+
+- `verify(anchor, sample)` - used for matching feature vectors.
+  Method accepts input data in form of [NumPy](https://numpy.org/) N-dimensional array, which should be in following shape: (confidence, columns).
+  Its columns should contain the same data as `Extractor minutiae output` with one additional column that represents minutia distance to fingerprint core.
+  Method returns float matching confidence in range 0-1.
+
+**Usage**
+
+```python
+from fingerflow.matcher import Matcher
+
+extractor = Matcher("verify_net")
+
+prediction = extractor.verify(anchor_feature_vector, sample_feature_vector)
 ```
 
 ## Contributing

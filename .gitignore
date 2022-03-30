@@ -130,3 +130,9 @@ dmypy.json
 
 # my setup
 .vscode
+logs
+test_data
+dataset
+models
+matcher_training_data
+server_logs

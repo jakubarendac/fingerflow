@@ -1,7 +1,9 @@
-# from src.fingerflow import extractor
 import os
 import cv2
 import numpy as np
+# USING PYPI PACKAGE
+# from fingerflow import extractor
+# USING LOCAL VERSION - move script ro parent folder to run it
 from src.fingerflow import extractor
 
 COARSE_NET_PATH = "/home/jakub/projects/bp/minutiae_classificator/models/CoarseNet.h5"
