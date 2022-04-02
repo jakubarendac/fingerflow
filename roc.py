@@ -9,7 +9,7 @@ from scripts.matcher_evaluation.utils import utils
 matplotlib.use('TkAgg')
 
 # https://machinelearningmastery.com/roc-curves-and-precision-recall-curves-for-classification-in-python/
-
+# https://www.datasciencecentral.com/roc-curve-explained-in-one-picture/
 DATASET_PATH = '/home/jakub/projects/dp/matcher_training_data/test_20_dataset/'
 WEIGHTS = '/home/jakub/projects/dp/fingerflow/models/matcher_contrast_weights_20_20220328-231635.h5'
 PRECISION = 20

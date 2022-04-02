@@ -21,7 +21,7 @@ def load_folder_data(folder):
     return data, np.array(labels)
 
 
-def load_dataset(dataset_path):
+def load_dataset(dataset_path, positive=True, negative=True):
     print('START: loading data')
     data, labels = load_folder_data(dataset_path)
 
@@ -39,26 +39,29 @@ def load_dataset(dataset_path):
         # randomly pick an image that belongs to the *same* class
         # label
 
-        idxB = np.random.choice(idx[label])
+        if positive:
+            idxB = np.random.choice(idx[label])
 
-        posData = data[idxB]
-        # prepare a positive pair and update the images and labels
-        # lists, respectively
-        np.random.shuffle(currentImage)
-        pairImages.append([currentImage, posData])
-        pairLabels.append([1])
+            posData = data[idxB]
+            # prepare a positive pair and update the images and labels
+            # lists, respectively
+            np.random.shuffle(currentImage)
+            pairImages.append([currentImage, posData])
+            pairLabels.append([1])
 
         # grab the indices for each of the class labels *not* equal to
         # the current label and randomly pick an image corresponding
         # to a label *not* equal to the current label
         # print(labels)
-        negIdx = np.where(labels != label)[0]
 
-        negData = data[np.random.choice(negIdx)]
-        # prepare a negative pair of images and update our lists
-        np.random.shuffle(currentImage)
-        pairImages.append([currentImage, negData])
-        pairLabels.append([0])
+        if negative:
+            negIdx = np.where(labels != label)[0]
+
+            negData = data[np.random.choice(negIdx)]
+            # prepare a negative pair of images and update our lists
+            np.random.shuffle(currentImage)
+            pairImages.append([currentImage, negData])
+            pairLabels.append([0])
 
         # return a 2-tuple of our image pairs and labels
     print('FINISH: loading data')
