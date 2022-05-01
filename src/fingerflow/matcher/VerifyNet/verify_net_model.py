@@ -37,29 +37,21 @@ def get_verify_net_model(precision, verify_net_path=None):
 def get_embeddings_model(precision):
     inputs = tf.keras.Input(shape=(utils.get_input_shape(precision)))
 
-    x = tf.keras.layers.BatchNormalization()(inputs)
+    x = tf.keras.layers.Conv2D(32, 3, 2, activation="relu",
+                               kernel_regularizer=tf.keras.regularizers.l2(l2=0.001))(inputs)
+    x = tf.keras.layers.Dropout(0.2)(x)
 
-    padding = (precision - constants.MINUTIAE_FEATURES) / 2
+    # x = tf.keras.layers.Conv2D(128, 3, 2, activation="relu",
+    #                            kernel_regularizer=tf.keras.regularizers.l2(l2=0.001))(x)
+    # x = tf.keras.layers.Dropout(0.2)(x)
 
-    x = tf.keras.layers.ZeroPadding2D((0, (math.floor(padding), math.ceil(padding))))(x)
-
-    x = tf.keras.layers.Conv1D(64, 3, 2, activation="relu")(x)
-
-    x = tf.keras.layers.Conv1D(128, 3, 2, activation="relu")(x)
-
-    x = tf.keras.layers.Dense(256,
-                              kernel_regularizer=tf.keras.regularizers.l2(l2=0.0001),
-                              activation="relu")(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
-
-    x = tf.keras.layers.Dense(128,
-                              kernel_regularizer=tf.keras.regularizers.l2(l2=0.0001),
-                              activation="relu")(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Conv2D(32, 3, 2, activation="relu",
+                               kernel_regularizer=tf.keras.regularizers.l2(l2=0.001))(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
 
     x = tf.keras.layers.Flatten()(x)
 
-    outputs = tf.keras.layers.Dense(10, activation="relu")(x)
+    outputs = tf.keras.layers.Dense(16, activation="relu")(x)
 
     embedding_network = tf.keras.Model(inputs, outputs)
 

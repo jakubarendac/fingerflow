@@ -7,9 +7,9 @@ from scripts.matcher_evaluation.utils import utils
 
 matplotlib.use('TkAgg')
 
-DATASET_PATH = '/home/jakub/projects/dp/matcher_training_data/test_20_dataset/'
-WEIGHTS = '/home/jakub/projects/dp/fingerflow/models/matcher_contrast_weights_20_20220328-231635.h5'
-PRECISION = 20
+PRECISION = 30
+DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/server_dataset/all/{PRECISION}/test/'
+WEIGHTS = f'/home/jakub/projects/dp/fingerflow/models/final/weights_{PRECISION}.h5'
 
 matcher = Matcher(PRECISION, WEIGHTS)
 
@@ -57,11 +57,13 @@ for i in range(100):
         eer = cur_frr
         eer_index = i
 
-plt.plot(threshold, frr, '--b')
-plt.plot(threshold, far, '--g')
-plt.plot(eer_index, eer, 'ro', label=f'EER: {eer} (Threshold: {eer_index})')
-plt.xlabel('threshold')
+plt.plot(threshold, frr, '--b', label='FRR')
+plt.plot(threshold, far, '--g', label='FAR')
+plt.plot(eer_index, eer, 'ro', label=f'EER: {round(eer, 3)} (Threshold: {eer_index})')
+plt.ylabel('Error rate')
+plt.xlabel('Sensitivity')
 plt.title('FRR - EER - FRR')
 plt.axis([0, 100, 0, 1])
 plt.legend(loc=4)
+plt.savefig(f'/home/jakub/projects/dp/fingerflow/far_frr/{PRECISION}.png')
 plt.show()

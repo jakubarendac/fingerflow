@@ -1,9 +1,9 @@
 import os
 import pandas as pd
 
-INPUT_PATH = '/home/jakub/projects/dp/matcher_training_data/preprocessed_dataset/'
+INPUT_PATH = '/home/jakub/projects/dp/matcher_training_data/server_dataset/01042022233218/'
 
-MINUTIAE_TO_USE = [16, 17, 18, 19]
+MINUTIAE_TO_USE = [40]
 
 for min_to_use in MINUTIAE_TO_USE:
     output_path = f'/home/jakub/projects/dp/matcher_training_data/preprocessed_dataset_{min_to_use}/'

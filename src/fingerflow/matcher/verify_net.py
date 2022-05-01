@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy as np
 from tensorflow.keras import backend
 
 from .VerifyNet import verify_net_model, utils
@@ -38,3 +37,7 @@ class VerifyNet:
         # return self.__verify_net.predict(
         #     np.vstack((preprocessed_pairs[0],
         #               preprocessed_pairs[1])))
+
+    def plot_model(self, file_path):
+        tf.keras.utils.plot_model(self.__verify_net, to_file=file_path,
+                                  show_shapes=True, expand_nested=True)

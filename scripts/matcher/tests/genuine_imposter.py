@@ -7,9 +7,9 @@ from scripts.matcher_evaluation.utils import utils
 
 matplotlib.use('TkAgg')
 
-DATASET_PATH = '/home/jakub/projects/dp/matcher_training_data/test_20_dataset/'
-WEIGHTS = '/home/jakub/projects/dp/fingerflow/models/matcher_contrast_weights_20_20220328-231635.h5'
-PRECISION = 20
+PRECISION = 10
+DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/server_dataset/all/{PRECISION}/test/'
+WEIGHTS = f'/home/jakub/projects/dp/fingerflow/models/final/weights_{PRECISION}.h5'
 
 matcher = Matcher(PRECISION, WEIGHTS)
 
@@ -21,11 +21,12 @@ negative_predictions = matcher.verify_batch(negative_pairs)
 
 _, ax = plt.subplots()
 
-sns.kdeplot(data=positive_predictions, ax=ax, color='g')
-sns.kdeplot(data=negative_predictions, ax=ax, color='r')
+sns.kdeplot(data=positive_predictions, ax=ax, color='g', label="Genuine distribution")
+sns.kdeplot(data=negative_predictions, ax=ax, color='r', label="Imposter distribution")
 plt.xlabel('Matching score')
-plt.ylabel('Frequency')
-plt.title('Genuine/Impostor distribution')
-plt.axis([0, 1, 0, 1])
-# plt.legend(loc=4)
+plt.ylabel('Density')
+plt.title('Genuine and imposter score distributions')
+# plt.axis([0, 1, 0, 1])
+plt.legend(loc=2)
+plt.savefig(f'/home/jakub/projects/dp/fingerflow/genuine_imposter/{PRECISION}.png')
 plt.show()

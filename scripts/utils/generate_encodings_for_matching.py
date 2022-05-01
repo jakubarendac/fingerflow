@@ -27,27 +27,27 @@ IMAGES_FOLDERS = [
         'name': '04_DB3_A',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB3_A/'
     },
-    { 
+    {
         'name': '04_DB2_A',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB2_A/'
     },
-    { 
+    {
         'name': '04_DB1_A',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB1_A/'
     },
-    { 
+    {
         'name': '04_DB4_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB4_B/'
     },
-    { 
+    {
         'name': '04_DB3_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB3_B/'
     },
-    { 
+    {
         'name': '04_DB2_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB2_B/'
     },
-    { 
+    {
         'name': '04_DB1_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2004/DB1_B/'
     },
@@ -59,27 +59,27 @@ IMAGES_FOLDERS = [
         'name': '02_DB1_A',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db1_a/'
     },
-    { 
+    {
         'name': '02_DB3_A',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db3_a/'
     },
-    { 
+    {
         'name': '02_DB4_A',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db4_a/'
     },
-    { 
+    {
         'name': '02_DB1_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db1_b/'
     },
-    { 
+    {
         'name': '02_DB2_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db2_b/'
     },
-    { 
+    {
         'name': '02_DB3_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db3_b/'
     },
-    { 
+    {
         'name': '02_DB4_B',
         'path': '/home/jakubarendac/fingerflow/dataset/FVC_Fingerprint_DB/FVC2002/Db4_b/'
     }
@@ -92,7 +92,7 @@ def rotate_image_and_extract_minutaie_points(image):
     rotated_image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
 
     extracted_data = extractor.extract_minutiae(rotated_image)
-    nearest_minutiae = get_n_nearest_minutiae(extracted_data)
+    # nearest_minutiae = get_n_nearest_minutiae(extracted_data)
 
     return nearest_minutiae, rotated_image
 
@@ -110,7 +110,7 @@ def get_n_nearest_minutiae(extracted_data):
     minutiae_data = extracted_data['minutiae']
     core_point = get_correct_core_point(extracted_data['core'])
 
-    if len(core_point) == 0 or len(minutiae_data) < MINUTIAE_NUM:
+    if len(core_point) == 0:
         return pd.DataFrame()
 
     minutiae_data['core_distance'] = np.linalg.norm(

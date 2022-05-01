@@ -6,15 +6,17 @@ from sklearn.utils import shuffle
 
 from . import verify_net_model, utils
 
-PRECISION = 20
+PRECISION = 30
+DB = 'all'
 
 CURRENT_TIMESTAMP = datetime.now().strftime("%Y%m%d-%H%M%S")
 
-DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/preprocessed_dataset_{PRECISION}'
-LOGS_FOLDER = f'/home/jakub/projects/dp/fingerflow/logs/logs-conv-contrast-{PRECISION}/scalars/{CURRENT_TIMESTAMP}'
-MODEL_PATH = f'/home/jakub/projects/dp/fingerflow/models/matcher_contrast_weights_{PRECISION}_{CURRENT_TIMESTAMP}.h5'
+TRAIN_DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/server_dataset/{DB}/{PRECISION}/train'
+TEST_DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/server_dataset/{DB}/{PRECISION}/test'
+LOGS_FOLDER = f'/home/jakub/projects/dp/fingerflow/logs/new/logs-final/scalars/{PRECISION}_{CURRENT_TIMESTAMP}'
+MODEL_PATH = f'/home/jakub/projects/dp/fingerflow/models/final/matcher_contrast_weights_{PRECISION}_{CURRENT_TIMESTAMP}.h5'
 EPOCHS = 100
-BATCH_SIZE = 64
+BATCH_SIZE = 256
 
 model = verify_net_model.get_verify_net_model(PRECISION)
 
@@ -44,9 +46,9 @@ def load_folder_data(folder):
     return data_shuffled, labels_shuffled
 
 
-def load_dataset():
-    print('START: loading data')
-    data, labels = load_folder_data(DATASET_PATH)
+def load_dataset(dataset_path):
+    print('START: loading data => ', dataset_path)
+    data, labels = load_folder_data(dataset_path)
 
     numClasses = np.max(labels) + 1
     idx = [np.where(labels == i)[0] for i in range(0, numClasses)]
@@ -92,23 +94,25 @@ def load_dataset():
 def split_dataset(pairs, labels):
     length, _ = labels.shape
 
-    train_indices = 0, int(length * 0.6)
-    val_indices = int(length * 0.6) + 1, int(length * 0.8)
-    test_indices = int(length * 0.8) + 1, length
+    train_indices = 0, int(length * 0.8)
+    val_indices = int(length * 0.8) + 1, length
+    # test_indices = int(length * 0.8) + 1, length
 
     train_dataset = (pairs[:train_indices[1]], labels[:train_indices[1]])
     val_dataset = (pairs[val_indices[0]:val_indices[1]], labels[val_indices[0]:val_indices[1]])
-    test_dataset = (pairs[test_indices[0]:test_indices[1]], labels[test_indices[0]:test_indices[1]])
+    # test_dataset = (pairs[test_indices[0]:test_indices[1]], labels[test_indices[0]:test_indices[1]])
 
-    return train_dataset, val_dataset, test_dataset
+    return train_dataset, val_dataset
 
 
 def load_and_preprocess_dataset():
-    pairs, labels = load_dataset()
-    pairs_shuffled, labels_shuffled = shuffle(pairs, labels)
-    train_dataset, val_dataset, test_dataset = split_dataset(pairs_shuffled, labels_shuffled)
+    train_pairs, train_labels = load_dataset(TRAIN_DATASET_PATH)
+    test_pairs, test_labels = load_dataset(TEST_DATASET_PATH)
+    train_pairs_shuffled, train_labels_shuffled = shuffle(train_pairs, train_labels)
+    test_pairs_shuffled, test_labels_shuffled = shuffle(test_pairs, test_labels)
+    train_dataset, val_dataset = split_dataset(train_pairs_shuffled, train_labels_shuffled)
 
-    return train_dataset, val_dataset, test_dataset
+    return train_dataset, val_dataset, (test_pairs_shuffled, test_labels_shuffled)
 
 
 def train():
@@ -126,8 +130,8 @@ def train():
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
         MODEL_PATH, monitor=['val_accuracy'],
         verbose=1, mode='max', save_weights_only=True)
-    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.75,
-                                                     patience=10, min_lr=0.0001, verbose=1)
+    # reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.75,
+    #                                                  patience=10, min_lr=0.0001, verbose=1)
     lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
     train_pairs, train_labels = train_dataset
@@ -140,7 +144,7 @@ def train():
         validation_data=([val_pairs[:, 0], val_pairs[:, 1]], val_labels),
         batch_size=BATCH_SIZE,
         epochs=EPOCHS,
-        callbacks=[tensorboard, checkpoint, reduce_lr, lr_scheduler]
+        callbacks=[tensorboard, checkpoint, lr_scheduler]
     )
 
     model.evaluate([test_pairs[:, 0], test_pairs[:, 1]], test_labels)

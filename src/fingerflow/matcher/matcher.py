@@ -10,3 +10,6 @@ class Matcher:
 
     def verify_batch(self, pairs):
         return self.__verification_module.verify_fingerprints_batch(pairs)
+
+    def plot_model(self, file_path):
+        self.__verification_module.plot_model(file_path)

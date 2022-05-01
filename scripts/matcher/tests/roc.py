@@ -1,3 +1,5 @@
+import os
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
@@ -10,9 +12,12 @@ matplotlib.use('TkAgg')
 
 # https://machinelearningmastery.com/roc-curves-and-precision-recall-curves-for-classification-in-python/
 # https://www.datasciencecentral.com/roc-curve-explained-in-one-picture/
-DATASET_PATH = '/home/jakub/projects/dp/matcher_training_data/test_20_dataset/'
-WEIGHTS = '/home/jakub/projects/dp/fingerflow/models/matcher_contrast_weights_20_20220328-231635.h5'
-PRECISION = 20
+PRECISION = 30
+DATASET_PATH = f'/home/jakub/projects/dp/matcher_training_data/server_dataset/all/{PRECISION}/test/'
+WEIGHTS = f'/home/jakub/projects/dp/fingerflow/models/final/weights_{PRECISION}.h5'
+ROC_DATA_FOLDER = f'/home/jakub/projects/dp/fingerflow/roc/{PRECISION}'
+
+os.mkdir(ROC_DATA_FOLDER)
 
 matcher = Matcher(PRECISION, WEIGHTS)
 
@@ -23,10 +28,23 @@ predictions = matcher.verify_batch(pairs)
 fpr, tpr, thresholds = roc_curve(labels, predictions)
 auc_value = auc(fpr, tpr)
 
-plt.plot(fpr, tpr, label=f"AUC: {auc_value} (Minutiae: {PRECISION})")
+with open(f'{ROC_DATA_FOLDER}/fpr.npy', 'wb') as f:
+    np.save(f, fpr)
+    f.close()
+
+with open(f'{ROC_DATA_FOLDER}/tpr.npy', 'wb') as f:
+    np.save(f, tpr)
+    f.close()
+
+with open(f'{ROC_DATA_FOLDER}/auc_value.npy', 'w') as f:
+    f.write(str(auc_value))
+    f.close()
+
+plt.plot(fpr, tpr, label=f"VerifyNet - Minutiae: {PRECISION} (AUC: {auc_value})")
 plt.plot([0, 1], [0, 1], "k--")
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
 plt.title("ROC curve")
 plt.legend(loc=4)
+plt.savefig(f'/home/jakub/projects/dp/fingerflow/roc/{PRECISION}.png')
 plt.show()

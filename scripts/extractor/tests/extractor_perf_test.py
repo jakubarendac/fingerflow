@@ -1,17 +1,18 @@
 
 import os
 import time
+import numpy as np
 from datetime import datetime
 import cv2
 from fingerflow.extractor import Extractor
 
-IMAGE_FOLDER = "/home/jakubarendac/dataset/FVC2004/DB1_A/"
+IMAGE_FOLDER = "/home/jakub/projects/bp/DBs/biometric DBs/FVC_Fingerprint_DB/FVC2004/DB1_A/"
 # IMAGE_FOLDER = "/home/jakubarendac/dataset/FVC2002/Db1_a/"
 
-COARSE_NET_PATH = "/home/jakubarendac/models/CoarseNet.h5"
-FINE_NET_PATH = "/home/jakubarendac/models/FineNet.h5"
-CLASSIFY_NET_PATH = "/home/jakubarendac/models/ClassifyNet.h5"
-CORE_NET_PATH = "/home/jakubarendac/models/yolo-kernel_final.weights"
+COARSE_NET_PATH = "/home/jakub/projects/dp/fingerflow/models/CoarseNet.h5"
+FINE_NET_PATH = "/home/jakub/projects/dp/fingerflow/models/FineNet.h5"
+CLASSIFY_NET_PATH = "/home/jakub/projects/dp/fingerflow/models/ClassifyNet.h5"
+CORE_NET_PATH = "/home/jakub/projects/dp/fingerflow/models/yolo-kernel_final.weights"
 
 date_time = datetime.now().strftime('%Y%m%d-%H%M%S')
 
