@@ -5,7 +5,7 @@
 
 FingerFlow is an end-to-end deep learning Python framework for fingerprint minutiae manipulation built on top of [Keras](https://keras.io/) - [TensorFlow](https://www.tensorflow.org/) high-level API.
 
-In current stable version 3.0.0 following modules are provided:
+In current stable version 3.0.1 following modules are provided:
 
 - **extractor** - module responsible for extraction and classification of minutiae points from fingerprints. It is also capable of detecting fingerprint core points.
 - **matcher** - module responsible for matching extracted minutiae feature vectors.
@@ -48,7 +48,7 @@ Extractor contains 3 modules:
 - **CoarseNet**: [Googledrive](https://drive.google.com/file/d/1alvw_kAyY4sxdzAkGABQR7waux-rgJKm/view?usp=sharing) || [Dropbox](https://www.dropbox.com/s/gppil4wybdjcihy/CoarseNet.h5?dl=0)
 - **FineNet**: [Googledrive](https://drive.google.com/file/d/1wdGZKNNDAyN-fajjVKJoiyDtXAvl-4zq/view?usp=sharing) || [Dropbox](https://www.dropbox.com/s/k7q2vs9255jf2dh/FineNet.h5?dl=0)
 - **ClassifyNet**: [Googledrive](https://drive.google.com/file/d/1dfQDW8yxjmFPVu0Ddui2voxdngOrU3rc/view?usp=sharing)
-- **CoreNet**: [Googledrive](https://drive.google.com/file/d/1C4cQLhydj0FcNLC7hs_aTxcHmTnnoXMl/view?usp=sharing)
+- **CoreNet**: [Googledrive](https://drive.google.com/file/d/1v091s0eY4_VOLU9BqDXVSaZcFnA9qJPl/view?usp=sharing)
 
 #### API
 
@@ -110,8 +110,10 @@ extracted_minutiae = extractor.extract_minutiae(image)
 ### Matcher
 
 Module responsible for matching extracted feature vectors. It is using custom Siamese neural network architecture.
-Input size (number of minutiae in feature vector) for matching is not fixed and can be adjusted.
-But in general, the more minutiae points the higher precision. Our custom model is trained on TBD minutie points per input.
+Input size (number of minutiae in feature vector) for matching is not fixed and is determined by `precision` constructor argument. Used weights need to be in the correct shape - network needs to be trained with the same precision as passed in the argument.
+But in general, the more minutiae points the higher precision. Our custom model is trained on 10, 14, 20, 24, 30 minutie points per input.
+
+![Alt text](assets/verify-net-roc.png "VerifyNet ROC")
 
 Matcher contains 1 module:
 
@@ -119,7 +121,11 @@ Matcher contains 1 module:
 
 #### Neural network models
 
-- **VerifyNet**: TBD
+- **VerifyNet 10**: [Googledrive](https://drive.google.com/file/d/1cEz3oCYS4JCUiZxpU5o8lYesMOVgR0rt/view?usp=sharing)
+- **VerifyNet 14**: [Googledrive](https://drive.google.com/file/d/1CI7z1r99AEV6Lrm2bQeGEFmVdQ8colUW/view?usp=sharing)
+- **VerifyNet 20**: [Googledrive](https://drive.google.com/file/d/1lP1zDHTa7TemWPluv89ueFWCa95RnLF-/view?usp=sharing)
+- **VerifyNet 24**: [Googledrive](https://drive.google.com/file/d/1h2RwuM1-mgiF4dfwslbgiI7-K8F4aw2A/view?usp=sharing)
+- **VerifyNet 30**: [Googledrive](https://drive.google.com/file/d/1gQEzJKlCmUqe7Sx-W-6H1w1NGY8M98bX/view?usp=sharing)
 
 #### API
 
@@ -142,15 +148,17 @@ fingerflow.matcher.Matcher()
   Method accepts input data in form of [NumPy](https://numpy.org/) N-dimensional array, which should be in following shape: (confidence, columns).
   Its columns should contain the same data as `Extractor minutiae output` with one additional column that represents minutia distance to fingerprint core.
   Method returns float matching confidence in range 0-1.
+- `verify_batch(pairs)` - performs pairwise verification in provided list of pairs. Returns list of float matching confidences.
+- `plot_model(file_path)` - plot model structure into image file. `file_path` should represent path to desired file.
 
 **Usage**
 
 ```python
 from fingerflow.matcher import Matcher
 
-extractor = Matcher("verify_net")
+matcher = Matcher(30, "verify_net")
 
-prediction = extractor.verify(anchor_feature_vector, sample_feature_vector)
+prediction = matcher.verify(anchor_feature_vector, sample_feature_vector)
 ```
 
 ## Contributing

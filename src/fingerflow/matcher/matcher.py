@@ -7,3 +7,9 @@ class Matcher:
 
     def verify(self, anchor, sample):
         return self.__verification_module.verify_fingerprints(anchor, sample)
+
+    def verify_batch(self, pairs):
+        return self.__verification_module.verify_fingerprints_batch(pairs)
+
+    def plot_model(self, file_path):
+        self.__verification_module.plot_model(file_path)
