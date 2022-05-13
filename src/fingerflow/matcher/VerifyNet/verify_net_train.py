@@ -96,11 +96,9 @@ def split_dataset(pairs, labels):
 
     train_indices = 0, int(length * 0.8)
     val_indices = int(length * 0.8) + 1, length
-    # test_indices = int(length * 0.8) + 1, length
 
     train_dataset = (pairs[:train_indices[1]], labels[:train_indices[1]])
     val_dataset = (pairs[val_indices[0]:val_indices[1]], labels[val_indices[0]:val_indices[1]])
-    # test_dataset = (pairs[test_indices[0]:test_indices[1]], labels[test_indices[0]:test_indices[1]])
 
     return train_dataset, val_dataset
 
@@ -130,8 +128,6 @@ def train():
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
         MODEL_PATH, monitor=['val_accuracy'],
         verbose=1, mode='max', save_weights_only=True)
-    # reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.75,
-    #                                                  patience=10, min_lr=0.0001, verbose=1)
     lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
     train_pairs, train_labels = train_dataset

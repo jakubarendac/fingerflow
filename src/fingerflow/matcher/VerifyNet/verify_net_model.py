@@ -1,4 +1,3 @@
-import math
 import tensorflow as tf
 
 from . import constants, utils
@@ -40,10 +39,6 @@ def get_embeddings_model(precision):
     x = tf.keras.layers.Conv2D(32, 3, 2, activation="relu",
                                kernel_regularizer=tf.keras.regularizers.l2(l2=0.001))(inputs)
     x = tf.keras.layers.Dropout(0.2)(x)
-
-    # x = tf.keras.layers.Conv2D(128, 3, 2, activation="relu",
-    #                            kernel_regularizer=tf.keras.regularizers.l2(l2=0.001))(x)
-    # x = tf.keras.layers.Dropout(0.2)(x)
 
     x = tf.keras.layers.Conv2D(32, 3, 2, activation="relu",
                                kernel_regularizer=tf.keras.regularizers.l2(l2=0.001))(x)

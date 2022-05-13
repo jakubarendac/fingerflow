@@ -22,9 +22,6 @@ class VerifyNet:
         preprocessed_pairs = [utils.preprocess_predict_input(
             anchor, sample) for [anchor, sample] in pairs]
 
-        # print(np.stack(([preprocessed_pairs[0]],
-        #                 [preprocessed_pairs[1]]))[0])
-
         def predict_item(pair):
             [[prediction]] = self.__verify_net.predict(pair)
 
